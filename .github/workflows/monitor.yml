@@ -2,15 +2,22 @@ name: Monitor Google Careers Page
 
 on:
   schedule:
-    - cron: '0 * * * *'  # every hour
-  workflow_dispatch:     # allows manual runs
+    - cron: '0 * * * *'  # Every hour
+  workflow_dispatch:
 
 jobs:
   monitor:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
+
+    - name: Restore cached hash file
+      uses: actions/cache@v3
+      with:
+        path: page_hash.txt
+        key: job-monitor-hash-file
 
     - name: Set up Python
       uses: actions/setup-python@v4
