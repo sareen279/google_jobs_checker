@@ -4,10 +4,15 @@ import smtplib
 from bs4 import BeautifulSoup
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import os
+
+sender = os.environ['SENDER_EMAIL']
+password = os.environ['EMAIL_PASSWORD']
+EMAIL = os.environ['RECEIVER_EMAIL']
 
 URL = "https://www.google.com/about/careers/applications/jobs/results/?q=%22Data%20Engineer%22&location=India"
 HASH_FILE = "page_hash.txt"
-EMAIL = "sareen279@gmail.com"
+# EMAIL = "sareen279@gmail.com"
 
 def get_page_hash():
     headers = {'User-Agent': 'Mozilla/5.0'}
@@ -17,8 +22,8 @@ def get_page_hash():
     return hashlib.sha256(content.encode()).hexdigest()
 
 def send_email_alert():
-    sender = "your-email@gmail.com"
-    password = "your-app-password"  # Use App Password, not regular Gmail password
+    # sender = "your-email@gmail.com"
+    # password = "your-app-password"  # Use App Password, not regular Gmail password
     subject = "🔔 Google Careers Page Changed"
     body = f"The Google job page for 'Data Engineer - India' has changed.\n\nCheck here: {URL}"
 
