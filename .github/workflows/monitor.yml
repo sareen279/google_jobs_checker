@@ -17,7 +17,9 @@ jobs:
       uses: actions/cache@v3
       with:
         path: page_hash.txt
-        key: job-monitor-hash-file
+        key: job-monitor-hash-${{ github.run_id }}  # unique but won't match previous
+        restore-keys: |
+          job-monitor-hash-
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -33,3 +35,10 @@ jobs:
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
       run: python job_monitor.py
+
+    - name: Save updated cache
+      if: always()
+      uses: actions/cache/save@v3
+      with:
+        path: page_hash.txt
+        key: job-monitor-hash-${{ github.run_id }}
