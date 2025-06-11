@@ -13,11 +13,13 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v3
 
-    - name: Restore cached hash file
+    - name: Restore cached hash and content
       uses: actions/cache@v3
       with:
-        path: page_hash.txt
-        key: job-monitor-hash-${{ github.run_id }}  # unique but won't match previous
+        path: |
+          page_hash.txt
+          previous_content.txt
+        key: job-monitor-hash-restore
         restore-keys: |
           job-monitor-hash-
 
@@ -36,9 +38,11 @@ jobs:
         RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
       run: python job_monitor.py
 
-    - name: Save updated cache
+    - name: Save updated hash and content to new cache
       if: always()
       uses: actions/cache/save@v3
       with:
-        path: page_hash.txt
+        path: |
+          page_hash.txt
+          previous_content.txt
         key: job-monitor-hash-${{ github.run_id }}
