@@ -1,8 +1,8 @@
-name: Monitor Google Careers Page
+name: Monitor Google Careers Page (Rolling Cache)
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Every hour
+    - cron: '0 * * * *'  # Every 1 hours
   workflow_dispatch:
 
 jobs:
@@ -13,13 +13,12 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v3
 
-    - name: Restore cached hash file
+    # ✅ Use rolling cache (same key for restore and save)
+    - name: Restore and save cache
       uses: actions/cache@v3
       with:
         path: page_hash.txt
-        key: job-monitor-hash-${{ github.run_id }}  # unique but won't match previous
-        restore-keys: |
-          job-monitor-hash-
+        key: job-monitor-hash
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -29,16 +28,9 @@ jobs:
     - name: Install dependencies
       run: pip install requests beautifulsoup4
 
-    - name: Run monitor script
+    - name: Run monitoring script
       env:
         SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
       run: python job_monitor.py
-
-    - name: Save updated cache
-      if: always()
-      uses: actions/cache/save@v3
-      with:
-        path: page_hash.txt
-        key: job-monitor-hash-${{ github.run_id }}
