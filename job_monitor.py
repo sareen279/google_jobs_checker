@@ -1,7 +1,7 @@
 import hashlib
 import requests
 import smtplib
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
@@ -14,12 +14,33 @@ URL = "https://www.google.com/about/careers/applications/jobs/results/?q=%22Data
 HASH_FILE = "page_hash.txt"
 # EMAIL = "sareen279@gmail.com"
 
+def is_visible_text(element):
+    return (
+        element.parent.name not in ['style', 'script', 'head', 'meta', '[document]']
+        and not isinstance(element, Comment)
+        and element.strip()
+    )
+
 def get_page_hash():
     headers = {'User-Agent': 'Mozilla/5.0'}
     response = requests.get(URL, headers=headers)
     soup = BeautifulSoup(response.text, 'html.parser')
-    content = soup.get_text()
+
+    texts = soup.findAll(string=True)
+    visible_texts = filter(is_visible_text, texts)
+    content = " ".join(t.strip() for t in visible_texts)
+
+    # Optional: log for audit
+    print("🔍 Text used for hashing:\n", content[:500], "...")
+
     return hashlib.sha256(content.encode()).hexdigest()
+
+#def get_page_hash():
+#    headers = {'User-Agent': 'Mozilla/5.0'}
+#    response = requests.get(URL, headers=headers)
+#    soup = BeautifulSoup(response.text, 'html.parser')
+#    content = soup.get_text()
+#    return hashlib.sha256(content.encode()).hexdigest()
 
 def send_email_alert():
     # sender = "your-email@gmail.com"
