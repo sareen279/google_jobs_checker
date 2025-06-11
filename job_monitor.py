@@ -34,7 +34,7 @@ def get_page_hash(content: str) -> str:
     return hashlib.sha256(content.encode()).hexdigest()
 
 def send_email_alert(content: str):
-    subject = "🔔 Google Careers Page Changed"
+    subject = "🔔 Google Careers Page Changed (Single Hash)"
     body = f"""
     The monitored Google job page for 'Data Engineer - India' has changed.
 
