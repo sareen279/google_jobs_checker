@@ -2,7 +2,7 @@ name: Monitor Google Careers Page
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Every hour
+    - cron: '0 */3 * * *'  # Every 3 hours
   workflow_dispatch:
 
 jobs:
